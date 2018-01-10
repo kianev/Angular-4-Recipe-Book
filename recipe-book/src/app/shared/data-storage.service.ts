@@ -4,22 +4,26 @@ import {RecipeService} from "../recipes/recipe.service";
 import {Recipe} from "../recipes/recipe.model";
 import 'rxjs/Rx';
 import {AuthService} from "../auth/auth.service";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpHeaders, HttpParams, HttpRequest} from "@angular/common/http";
 
 @Injectable()
 export class DataStorageService {
   constructor(private httpClient: HttpClient, private recipeService: RecipeService, private authService: AuthService) {}
 
   storeRecipe() {
-    const token = this.authService.getToken();
-    return this.httpClient.put('https://angular4-recipe-book-ae13e.firebaseio.com/recipes.json?auth=' + token, this.recipeService.getRecipes(), {
-      observe: 'body'
-    });
+    // return this.httpClient.put('https://angular4-recipe-book-ae13e.firebaseio.com/recipes.json', this.recipeService.getRecipes(), {
+    //   observe: 'body',
+    //   params: new HttpParams().set('auth', token)
+    //  // headers: new HttpHeaders().set('Authorization', 'Bearer fsfdsddsf')
+    // });
+
+    const req = new HttpRequest('PUT', 'https://angular4-recipe-book-ae13e.firebaseio.com/recipes.json',
+      this.recipeService.getRecipes(), {reportProgress: true});
+    return this.httpClient.request(req);
   }
 
   getRecipes() {
-    const token = this.authService.getToken();
-    this.httpClient.get<Recipe[]>('https://angular4-recipe-book-ae13e.firebaseio.com/recipes.json?auth=' + token, {
+    this.httpClient.get<Recipe[]>('https://angular4-recipe-book-ae13e.firebaseio.com/recipes.json', {
       observe: 'body',
       responseType: 'json'
     })
